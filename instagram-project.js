@@ -102,7 +102,7 @@ export class InstagramProject extends DDDSuper(I18NMixin(LitElement)) {
 
   async firstUpdated() {
     try {
-      const response = await fetch("./image.json");
+      const response = await fetch("/api/images");
       const data = await response.json();
       this.slides = data.images;
       const params = new URLSearchParams(window.location.search);
