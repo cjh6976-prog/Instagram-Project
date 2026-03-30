@@ -100,66 +100,57 @@ export class InstagramProject extends DDDSuper(I18NMixin(LitElement)) {
     `];
   }
 
-  firstUpdated() {
-    this.slides = this.querySelectorAll("instagram-slide");
-    this._updateSlides();
-    this.loadFoxForAllSlides();
-  }
-  loadFoxForAllSlides() {
-    if (!this.slides.length) return;
-    this.loadFoxIntoSlide(this.slides[this.currentIndex]);
-  }
-
-  async loadFoxIntoSlide(slide) {
+  async firstUpdated() {
     try {
-      const response = await fetch("https://randomfox.ca/floof/");
+      const response = await fetch("./image.json");
       const data = await response.json();
-      slide.querySelectorAll("img").forEach(img => img.remove());
-      const img = document.createElement("img");
-      img.src = data.image;
-      img.alt = "Random Fox";
-      img.style.width = "100%";
-      img.style.borderRadius = "8px";
-      img.loading = "lazy";
-      slide.appendChild(img);
+      this.slides = data.images;
+      const params = new URLSearchParams(window.location.search);
+      const index = params.get("activeIndex");
+      if (index !== null) {
+        this.currentIndex = parseInt(index);
+      }
+      this._loadLikeState();
     } catch (error) {
-      console.error("Error fetching fox image:", error);
-      }
-      }
+      console.error("Error loading image data:", error);
+    }
+  }
+  updated(changedProperties) {
+    if (changedProperties.has("currentIndex")) {
+      this._loadLikeState();
+    }
+  }
 
+  updateQueryParams(Key, Value) {
+    const url = new URL(window.location);
+    url.searchParams.set(Key, Value);
+    history.pushState(null, "", url.toString());
+  }
 
     _loadLikeState() {
     const savedState = localStorage.getItem("liked" + this.currentIndex);
     this.liked = savedState === "true";
   }
 
-  _updateSlides() {
-    this.slides.forEach((slide, index) => {
-      slide.style.display = index === this.currentIndex ? "block" : "none";
-    });
-  }
 
   next() {
     if (this.currentIndex < this.slides.length - 1) {
       this.currentIndex++;
-      this._updateSlides();
-      this.loadFoxIntoSlide(this.slides[this.currentIndex]);
+      this.updateQueryParams("activeIndex", this.currentIndex);
       this._loadLikeState();
     }
   }
   prev() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
-      this._updateSlides();
-      this.loadFoxIntoSlide(this.slides[this.currentIndex]);
+      this.updateQueryParams("activeIndex", this.currentIndex);
       this._loadLikeState();
     }
   }
 
   goToSlide(index) {
     this.currentIndex = index;
-    this._updateSlides();
-    this.loadFoxIntoSlide(this.slides[this.currentIndex]);
+    this.updateQueryParams("activeIndex", this.currentIndex);
     this._loadLikeState();
   }
     toggleLike() {
@@ -177,7 +168,18 @@ export class InstagramProject extends DDDSuper(I18NMixin(LitElement)) {
     @arrow-clicked="${this.prev}">
     </instagram-arrow>
 
-  <slot></slot>
+  ${this.slides.map((slide, index) => html`
+    <instagram-slide 
+      ?active="${index === this.currentIndex}"
+      style="display: ${index === this.currentIndex ? "block" : "none"}"
+      .username="${slide.username}"
+      .name="${slide.author.name}"
+      .profilePicture="${slide.author.profilePicture}"
+      .since="${slide.author.since}"
+      .image="${slide.image.full}"
+      .caption="${slide.caption}"
+    ></instagram-slide>
+  `)}
   <instagram-arrow 
    direction="right"
    ?disabled="${this.currentIndex === this.slides.length - 1}"
@@ -197,7 +199,7 @@ export class InstagramProject extends DDDSuper(I18NMixin(LitElement)) {
 <span class="icon">🔗</span>
 </div>
 <div class="caption-box">
-  <slot name="caption"></slot>
+  ${this.slides[this.currentIndex]?.caption}
 </div>
 
 

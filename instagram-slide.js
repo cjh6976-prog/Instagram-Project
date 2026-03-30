@@ -25,6 +25,12 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
         secondHeading: { type: String, attribute: "second-heading" },
         active: { type: Boolean, reflect: true },
         liked: { type: Boolean },
+        image: { type: String },
+        caption: { type: String },
+        username: { type: String },
+        name: { type: String },
+        profilePicture: { type: String },
+        since: { type: String },
     };
 }
 
@@ -32,6 +38,7 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
     return [super.styles, css`
     :host {
       display: block;
+      width: 100%;
     }
     :host([active]) {
       display: block;
@@ -39,25 +46,29 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
     .slide-wrapper {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         height: auto;
-        color: lightblue;
-        overflow: hidden;
-        height: auto;
+        overflow: hidden; 
+        max-height: 500px; 
+        width: 100%;
     }
-    .slide-wrapper img {
+    .slide-wrapper > img {
         display: block;
         margin: 0 auto;
-        max-width: 100%;
+        width: 450px;
         border-radius: 12px;
-        height: 200px;
-        width: 100%;
+        height: 550px;
         object-fit: cover;
+
     }
     h3 {
         font-size: 20px;
         color: black;
         margin: 0 0 8px 0;
         text-align: left;
+    }
+    .slide-wrapper h3 {
+      align-self: flex-start;
     }
     h4 {
         font-size: 30px;
@@ -72,6 +83,29 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
         margin: 16px 0;
         width: 40px;
         display: none;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 450px;
+      margin: 0 0 10px 0;
+    }
+    .profile-picture {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .header h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+    .header-text,
+    .username,
+    .name {
+      color: black;
     }
     div::-webkit-scrollbar {
   width: 12px;               /* width of the entire scrollbar */
@@ -91,7 +125,6 @@ div::-webkit-scrollbar-thumb {
         color: black;
         overflow: hidden;
         max-height: none;
-        margin-top: top;
         padding-top: 10px;
     }
   `];
@@ -100,11 +133,16 @@ div::-webkit-scrollbar-thumb {
   render() {
     return html`
 <div class="slide-wrapper">
-    <h3>${this.topHeading}</h3>
-    <h4>${this.secondHeading}</h4>
-    <hr class="line">
-    <div class="content">
-    <slot></slot>
+  <div class="header">
+    <img class="profile-picture" src="${this.profilePicture}" alt="Profile Picture" />
+    <div class="header-text">
+      <span class="username">${this.username}</span>
+      <span class="name">${this.name}</span>
+      <span class="since">${this.since}</span>
+    </div>
+  </div>
+      <img src="${this.image}" alt="slide image" loading="lazy" />
+      <div class="content">
 </div>
 
 </div>
