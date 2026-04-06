@@ -31,6 +31,9 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
         name: { type: String },
         profilePicture: { type: String },
         since: { type: String },
+        dateTaken: { type: String},
+        title: { type: String },
+        channelName: { type: String }
     };
 }
 
@@ -39,6 +42,7 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
     :host {
       display: block;
       width: 100%;
+      color-scheme: light dark;
     }
     :host([active]) {
       display: block;
@@ -55,15 +59,17 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
     .slide-wrapper > img {
         display: block;
         margin: 0 auto;
-        width: 450px;
-        border-radius: 12px;
-        height: 550px;
+        width: 100%;
+        max-width: 400px;
+        border-radius: var(--ddd-border-radius-md);
+        aspect-ratio: 4 / 5;
+        height: auto;
         object-fit: cover;
 
     }
     h3 {
-        font-size: 20px;
-        color: black;
+        font-size: var(--ddd-font-size-3xs);
+        color: light-dark(var(--ddd-theme-default-coalyGray), var(--ddd-theme-default-white));
         margin: 0 0 8px 0;
         text-align: left;
     }
@@ -71,14 +77,14 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
       align-self: flex-start;
     }
     h4 {
-        font-size: 30px;
+        font-size: var(--ddd-font-size-3xs);
         color: var(--ddd-theme-default-link);
-        margin: 0;
+        margin: var(--ddd-spacing-0);
         display: none;
     }
   
     .line {
-        border: none;
+        border: var(--ddd-spacing-0);
         border-top: 2px solid var(--ddd-theme-default-skyBlue);
         margin: 16px 0;
         width: 40px;
@@ -87,8 +93,9 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
     .header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      width: 450px;
+      gap: var(--ddd-spacing-3);
+      width: 100%;
+      max-width: 400px;
       margin: 0 0 10px 0;
     }
     .profile-picture {
@@ -99,13 +106,30 @@ export class InstagramSlide extends DDDSuper(I18NMixin(LitElement)) {
       flex-shrink: 0;
     }
     .header h3 {
-      margin: 0;
-      font-size: 20px;
+      margin: var(--ddd-spacing-0);
+      font-size: var(--ddd-font-size-3xs);
     }
     .header-text,
-    .username,
+    .username {
+      color: light-dark(var(--ddd-theme-default-coalyGray), var(--ddd-theme-default-white));
+    }
     .name {
-      color: black;
+      color: light-dark(var(--ddd-theme-default-coalyGray), var(--ddd-theme-default-white));
+    }
+    .since {
+      color: var(--ddd-theme-default-limestoneGray);
+      font-size: var(--ddd-font-size-4xs);
+    }
+    .username {
+      font-weight: var(--ddd-font-weight-bold);
+      margin-right: var(--ddd-spacing-2);
+    }
+    .name {
+      font-size: var(--ddd-font-size-3xs);
+      color: var(--ddd-theme-default-limestoneGray);
+    }
+    .date-taken {
+      color: light-dark(var(--ddd-theme-default-limestoneGray));
     }
     div::-webkit-scrollbar {
   width: 12px;               /* width of the entire scrollbar */
@@ -122,10 +146,19 @@ div::-webkit-scrollbar-thumb {
   overflow: hidden;
 }
     .content {
-        color: black;
+        color: light-dark(var(--ddd-theme-default-coalyGray), var(--ddd-theme-default-white));
         overflow: hidden;
         max-height: none;
-        padding-top: 10px;
+        padding-top: var(--ddd-spacing-3);
+    }
+    @media (max-width: 600px) {
+        .profile-picture {
+            width: 35px;
+            height: 35px;
+        }
+      }
+    .date{
+        color: var(--ddd-theme-default-limestoneGray);
     }
   `];
   } 
@@ -138,13 +171,13 @@ div::-webkit-scrollbar-thumb {
     <div class="header-text">
       <span class="username">${this.username}</span>
       <span class="name">${this.name}</span>
-      <span class="since">${this.since}</span>
     </div>
   </div>
-      <img src="${this.image}" alt="slide image" loading="lazy" />
+  <div class="since">Since: ${this.since}
+  </div>
+      <img src="${this.active ? this.image : ''}" alt="${this.caption || "Intagram Image"}" loading="lazy" />
       <div class="content">
 </div>
-
 </div>
 `;
   }

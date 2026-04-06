@@ -20,8 +20,8 @@ export class InstagramArrow extends DDDSuper(I18NMixin(LitElement)) {
   static get properties() {
     return {
         ...super.properties,
-        direction: { type: String },
-        disabled: {type: Boolean}
+        direction: { type: String, reflect: true },
+        disabled: {type: Boolean, reflect: true}
     };
   }
 
@@ -31,26 +31,30 @@ export class InstagramArrow extends DDDSuper(I18NMixin(LitElement)) {
       top: 50%;
       transform: translateY(-50%);
       cursor: pointer;
+      z-index: 2;
     }
     .arrow {
         width: 30px;
         height: 30px;
         border-radius: 50%;
         border: 3px solid var(--ddd-theme-default-link80);
-        background-color: white;
+        background-color: var(--ddd-theme-default-white);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 30px;
+        font-size: var(--ddd-font-size-3xs);
         color: var(--ddd-theme-default-link80);
-        font-weight: bold;
-        
+        font-weight: var(--ddd-font-weight-bold);
+        cursor: pointer;
     }
+      .arrow:hover {
+        opacity: 0.8;
+      }
     :host([direction="left"]) {
-      left: -20px;
+      left: var(--ddd-spacing-2);
     }
     :host([direction="right"]) {
-      right: -20px;
+      right: var(--ddd-spacing-2);
     }
     :host([disabled]) .arrow {
         opacity: 0.3;
@@ -89,6 +93,8 @@ export class InstagramArrow extends DDDSuper(I18NMixin(LitElement)) {
     tabindex="0"
     @click="${this._activate}"
     @keydown="${this._handleKey}"
+    aria-label="${this.direction === "left" ? "previous" : "next"}"
+    title="${this.direction === "left" ? "Previous Image" : "Next Image"}"
     >${this.direction === "left" ? "<" : ">"}</div>
 `;
   }

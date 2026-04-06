@@ -22,36 +22,45 @@ export class InstagramIndicator extends DDDSuper(I18NMixin(LitElement)) {
         ...super.properties,
         total: { type: Number },
         currentIndex: { type: Number },
+        slides: { type: Array },
     };
   }
 
     static styles = css`
     :host {
-        display: block;
-        margin-top: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        margin-top: var(--ddd-spacing-5);
         position: relative;
         bottom: auto;
-        margin-top: 10px;
+        margin-top: var(--ddd-spacing-3);
         left: 50%;
         transform: translateX(-50%);
+        flex-wrap: wrap;
+        max-width: 100%;
     }
-    :host{
-        width: 100%;
-        text-align: center;
-    }
-    .content {
-    }
-    .dots{
-        display: inline-block;
-        width: 10px;
-        height: 10px;
+    .thumbnail {
+        width: 30px;
+        height: 30px;
+        object-fit: cover;
+        margin: var(--ddd-spacing-0);
         border-radius: 50%;
-        background-color: var(--ddd-theme-default-limestoneGray);
-        margin: 0 5px;
         cursor: pointer;
+        opacity: 0.6;
+        border: var(--ddd-border-sm) solid transparent;
+        flex-shrink: 0;
     }
-    .dots.active {
-        background-color: var(--ddd-theme-default-skyBlue);
+    .thumbnail:hover {
+        opacity: 1;
+    }
+    .thumbnail.active {
+        opacity: 1;
+        border-color: var(--ddd-theme-primary);
+    }
+    .thumbnail:hover {
+      transform: scale(1.1);
+      border-color: var(--ddd-theme-primary);
     }
   `;
   _selectIndicator(index) {
@@ -67,16 +76,18 @@ export class InstagramIndicator extends DDDSuper(I18NMixin(LitElement)) {
   // Lit render the HTML
   render() {
     return html`
-${Array.from({ length: this.total }).map(
-    (_, i) => html`
-    <span
-    class="dots ${i === this.currentIndex ? "active" : ""}"
-    @click="${() => this._selectIndicator(i)}">
-  </span>
-  `)}
-   `;
+${this.slides.map((slide, index) => html`
+    <img 
+        class="thumbnail ${index === this.currentIndex ? "active" : ""}"
+        src="${slide.image.thumbnail || slide.image.full}" 
+        loading="lazy"
+        alt="${slide.caption} thumbnail"
+        @click="${() => this._selectIndicator(index)}"
+    />
+`)}
+    `;
   }
-
 }
+
 
 globalThis.customElements.define(InstagramIndicator.tag, InstagramIndicator);
